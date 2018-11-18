@@ -4,7 +4,19 @@
   "main": "index.js",
   "author": "tat3 <tat.github@gmail.com>",
   "license": "MIT",
+  "scripts": {
+    "test": "node ./node_modules/mocha/bin/mocha"
+  },
   "dependencies": {
-    "kuromoji": "^0.1.2"
+    "chai": "^4.2.0",
+    "eslint": "^5.9.0",
+    "eslint-config-standard": "^12.0.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-node": "^8.0.0",
+    "eslint-plugin-promise": "^4.0.1",
+    "eslint-plugin-standard": "^4.0.0",
+    "kuromoji": "^0.1.2",
+    "mocha": "^5.2.0",
+    "sinon": "^7.1.1"
   }
 }
