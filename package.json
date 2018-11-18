@@ -1,0 +1,10 @@
+{
+  "name": "haikufinder",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "tat3 <tat.github@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "kuromoji": "^0.1.2"
+  }
+}
