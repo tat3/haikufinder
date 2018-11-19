@@ -4,7 +4,7 @@ const express = require('express')
 const HaikuFinder = require('./lib/haikufinder')
 
 const app = express()
-const server = app.listen(3000, () => {
+const server = app.listen(process.env.PORT || 3000, () => {
   console.log(`Node.js is listening to PORT: ${server.address().port}`)
 })
 
