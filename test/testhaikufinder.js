@@ -13,20 +13,23 @@ describe('分解された文字列が575の形式になっているかどうか�
   })
 
   it('俳句の入った文字列を受け取ると、その一つを抽出して返す', () => {
-    const res = hf.interpret('松島やああ松島や松島や')
-    expect(res.hasHaiku).to.equal(true)
-    expect(res.haikuString).to.equal('松島やああ松島や松島や')
-    expect(res.haiku).to.deep.equal(['松島や', 'ああ松島や', '松島や'])
+    return hf.interpret('柿食えば鐘が鳴るなり法隆寺').then(res => {
+      expect(res.hasHaiku).to.equal(true)
+      expect(res.haikuString).to.equal('柿食えば鐘が鳴るなり法隆寺')
+      expect(res.haiku).to.deep.equal(['柿食えば', '鐘が鳴るなり', '法隆寺'])
+    })
+  })
 
-    const res2 = hf.interpret('古池や蛙飛び込む水の音')
-    expect(res2.hasHaiku).to.equal(true)
+  it('異なる俳句に対しても正しく抽出する', () => {
+    return hf.interpret('古池や蛙飛び込む水の音').then(res => {
+      expect(res.hasHaiku).to.equal(true)
+    })
   })
 
   it('俳句が入っていない文字列を受け取ると、hasHaikuだけを返す', () => {
-    expect(hf.interpret('この文字列には俳句が入っていない'))
-      .to.deep.equal({
-        hasHaiku: false
-      })
+    return hf.interpret('この文字列には俳句が入っていない').then((res) => {
+      expect(res.hasHaiku).to.deep.equal(false)
+    })
   })
 
   it('parseSentenceに文字列を渡して待つとtokenを返す', () => {
@@ -89,8 +92,14 @@ describe('分解された文字列が575の形式になっているかどうか�
       { reading: 'ミズ' }, { reading: 'ノ' }, { reading: 'オト' },
       { reading: 'ナド' }
     ])
-    expect(tokens).to.deep.equal({
-      status: 'fail'
-    })
+    expect(tokens).to.deep.equal({ status: 'fail' })
+  })
+
+  it('文字列から音として計上されない文字を除く', () => {
+    expect(hf.reading('アァ')).to.equal('ア')
+  })
+
+  it('ッは音として計上する', () => {
+    expect(hf.reading('ッッァ')).to.equal('ッッ')
   })
 })
