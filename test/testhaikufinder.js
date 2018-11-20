@@ -69,6 +69,23 @@ describe('分解された文字列が575の形式になっているかどうか�
     expect(tokens).to.deep.equal({ status: 'longer' })
   })
 
+  it('tokenに読点、コンマ、空白以外のreadingのない単語が入っていたら失敗', () => {
+    const res = hf.pickHaikuFromHead([
+      { reading: 'フルイケヤ' }, { surface_form: 'エクセル' },
+      { reading: 'カワズトビコム' }, { reading: 'ミズノオト' }
+    ])
+    expect(res.status).to.deep.equal('fail')
+  })
+
+  it('tokenが読点、コンマ、空白のときは飛ばして続行する', () => {
+    const res = hf.pickNLetterWords([
+      { reading: 'フルイケヤ' },
+      { surface_form: '、' }, { surface_form: ',' }, { surface_form: ' ' },
+      { reading: 'カワズトビコム' }, { reading: 'ミズノオト' }
+    ], 12)
+    expect(res.status).to.deep.equal('match')
+  })
+
   it('tokensの先頭から文字数が5, 7, 5となるように部分列を取り出す', () => {
     const tokens = hf.pickHaikuFromHead([
       { reading: 'フルイケ' }, { reading: 'ヤ' },
@@ -96,10 +113,10 @@ describe('分解された文字列が575の形式になっているかどうか�
   })
 
   it('文字列から音として計上されない文字を除く', () => {
-    expect(hf.reading('アァ')).to.equal('ア')
+    expect(hf.reading({ reading: 'アァ' })).to.equal('ア')
   })
 
   it('ッは音として計上する', () => {
-    expect(hf.reading('ッッァ')).to.equal('ッッ')
+    expect(hf.reading({ reading: 'ッッァ' })).to.equal('ッッ')
   })
 })
