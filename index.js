@@ -10,7 +10,7 @@ const server = app.listen(process.env.PORT || 3000, () => {
 
 const haikuFinder = new HaikuFinder()
 
-app.get('/haiku/:sentence', async (req, res, next) => {
+app.get('/:sentence', async (req, res, next) => {
   const result = await haikuFinder.interpret(req.params.sentence)
   res.send(result)
 })
