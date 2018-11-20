@@ -87,18 +87,33 @@ describe('分解された文字列が575の形式になっているかどうか�
   })
 
   it('tokensの先頭から文字数が5, 7, 5となるように部分列を取り出す', () => {
-    const tokens = hf.pickHaikuFromHead([
-      { reading: 'フルイケ' }, { reading: 'ヤ' },
-      { reading: 'カワズ' }, { reading: 'トビコム' },
-      { reading: 'ミズ' }, { reading: 'ノ' }, { reading: 'オト' },
-      { reading: 'ナド' }
-    ])
+    const haikuTokens = [
+      { word_type: 'KNOWN', pos: '名詞', reading: 'フルイケ' },
+      { word_type: 'KNOWN', pos: '名詞', reading: 'ヤ' },
+      { word_type: 'KNOWN', pos: '名詞', reading: 'カワズ' },
+      { word_type: 'KNOWN', pos: '名詞', reading: 'トビコム' },
+      { word_type: 'KNOWN', pos: '名詞', reading: 'ミズ' },
+      { word_type: 'KNOWN', pos: '名詞', reading: 'ノ' },
+      { word_type: 'KNOWN', pos: '名詞', reading: 'オト' },
+      { word_type: 'KNOWN', pos: '名詞', reading: 'ナド' }
+    ]
+    const tokens = hf.pickHaikuFromHead(haikuTokens)
     expect(tokens).to.deep.equal({
       status: 'match',
       tokens: [
-        [{ reading: 'フルイケ' }, { reading: 'ヤ' }],
-        [{ reading: 'カワズ' }, { reading: 'トビコム' }],
-        [{ reading: 'ミズ' }, { reading: 'ノ' }, { reading: 'オト' }]
+        [
+          { word_type: 'KNOWN', pos: '名詞', reading: 'フルイケ' },
+          { word_type: 'KNOWN', pos: '名詞', reading: 'ヤ' }
+        ],
+        [
+          { word_type: 'KNOWN', pos: '名詞', reading: 'カワズ' },
+          { word_type: 'KNOWN', pos: '名詞', reading: 'トビコム' }
+        ],
+        [
+          { word_type: 'KNOWN', pos: '名詞', reading: 'ミズ' },
+          { word_type: 'KNOWN', pos: '名詞', reading: 'ノ' },
+          { word_type: 'KNOWN', pos: '名詞', reading: 'オト' }
+        ]
       ]
     })
   })
