@@ -5,7 +5,7 @@
   "author": "tat3 <tat.github@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "test": "node ./node_modules/mocha/bin/mocha"
+    "test": "node ./node_modules/mocha/bin/mocha --timeout 10000"
   },
   "dependencies": {
     "body-parser": "^1.18.3",
