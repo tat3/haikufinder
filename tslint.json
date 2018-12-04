@@ -1,0 +1,17 @@
+{
+  "extends": [
+    "tslint-config-standard"
+  ],
+  "defaultSeverity": "warning",
+  "linterOptions": {
+    "exclude": [
+      "config/**/*.js",
+      "node_modules/**/*.ts",
+      "coverage/lcov-report/*.js"
+    ]
+  },
+  "rules": {
+    "interface-name": [false],
+    "object-literal-sort-keys": false
+  }
+}
