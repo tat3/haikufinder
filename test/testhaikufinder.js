@@ -58,7 +58,7 @@ describe('分解された文字列が575の形式になっているかどうか�
     const tokens = hf.pickNLetterWords([
       { reading: 'フルイケ' }
     ], 5)
-    expect(tokens).to.deep.equal({ status: 'shorter' })
+    expect(tokens).to.deep.equal({ status: 'shorter', tokens: [] })
   })
 
   it('tokensからn文字を取り出せなかった場合、statusにlongerを入れる', () => {
@@ -66,7 +66,7 @@ describe('分解された文字列が575の形式になっているかどうか�
       { reading: 'フルイケ' },
       { reading: 'ヤカワズ' }
     ], 5)
-    expect(tokens).to.deep.equal({ status: 'longer' })
+    expect(tokens).to.deep.equal({ status: 'longer', tokens: [] })
   })
 
   it('tokenにreadingのない単語が入っていたら失敗', () => {
@@ -115,7 +115,7 @@ describe('分解された文字列が575の形式になっているかどうか�
       { reading: 'ミズ' }, { reading: 'ノ' }, { reading: 'オト' },
       { reading: 'ナド' }
     ])
-    expect(tokens).to.deep.equal({ status: 'fail' })
+    expect(tokens).to.deep.equal({ status: 'fail', tokens: [] })
   })
 
   it('文字列から音として計上されない文字を除く', () => {

@@ -2,7 +2,7 @@
 const chai = require('chai')
 const expect = chai.expect
 
-const HaikuValidator = require('../lib/haikuvalidator')
+const HaikuValidator = require('../lib/haikuvalidator').default
 
 describe('HaikuValidatorのテスト', () => {
   let hv
