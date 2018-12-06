@@ -1,14 +1,13 @@
-// const ashitaka = require('./lib/ashitaka.js')
-// ashitaka(10)
-const express = require('express')
+import express from 'express'
 const bodyParser = require('body-parser')
-const HaikuFinder = require('./lib/haikufinder')
+import HaikuFinder from './lib/haikufinder'
 
 const app = express()
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
 const server = app.listen(process.env.PORT || 3000, () => {
+  // @ts-ignore
   console.log(`Node.js is listening to PORT: ${server.address().port}`)
 })
 

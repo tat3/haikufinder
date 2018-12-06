@@ -2,10 +2,11 @@
 const chai = require('chai')
 const expect = chai.expect
 
-const HaikuFinder = require('../lib/haikufinder')
-
+// const HaikuFinder = require('../lib/haikufinder')
+import HaikuFinder from '../lib/haikufinder'
+import { IpadicFeatures } from 'kuromoji'
 describe('分解された文字列が575の形式になっているかどうか判定する', () => {
-  let hf
+  let hf: HaikuFinder
 
   before((done) => {
     hf = new HaikuFinder()
@@ -44,7 +45,7 @@ describe('分解された文字列が575の形式になっているかどうか�
       { reading: 'フルイケ' },
       { reading: 'ヤ' },
       { reading: 'カワズ' }
-    ], 5)
+    ] as IpadicFeatures[], 5)
     expect(tokens).to.deep.equal({
       status: 'match',
       tokens: [
@@ -57,23 +58,23 @@ describe('分解された文字列が575の形式になっているかどうか�
   it('tokensがn文字に満たなかった場合、statusにshorterを入れる', () => {
     const tokens = hf.pickNLetterWords([
       { reading: 'フルイケ' }
-    ], 5)
-    expect(tokens).to.deep.equal({ status: 'shorter' })
+    ] as IpadicFeatures[], 5)
+    expect(tokens).to.deep.equal({ status: 'shorter', tokens: [] })
   })
 
   it('tokensからn文字を取り出せなかった場合、statusにlongerを入れる', () => {
     const tokens = hf.pickNLetterWords([
       { reading: 'フルイケ' },
       { reading: 'ヤカワズ' }
-    ], 5)
-    expect(tokens).to.deep.equal({ status: 'longer' })
+    ] as IpadicFeatures[], 5)
+    expect(tokens).to.deep.equal({ status: 'longer', tokens: [] })
   })
 
   it('tokenにreadingのない単語が入っていたら失敗', () => {
     const res = hf.pickHaikuFromHead([
       { reading: 'フルイケヤ' }, { surface_form: 'エクセル' },
       { reading: 'カワズトビコム' }, { reading: 'ミズノオト' }
-    ])
+    ] as IpadicFeatures[])
     expect(res.status).to.deep.equal('fail')
   })
 
@@ -87,7 +88,7 @@ describe('分解された文字列が575の形式になっているかどうか�
       { word_type: 'KNOWN', pos: '名詞', reading: 'ノ' },
       { word_type: 'KNOWN', pos: '名詞', reading: 'オト' },
       { word_type: 'KNOWN', pos: '名詞', reading: 'ナド' }
-    ]
+    ] as IpadicFeatures[]
     const tokens = hf.pickHaikuFromHead(haikuTokens)
     expect(tokens).to.deep.equal({
       status: 'match',
@@ -114,15 +115,15 @@ describe('分解された文字列が575の形式になっているかどうか�
       { reading: 'フルイケ' }, { reading: 'ヤ' },
       { reading: 'ミズ' }, { reading: 'ノ' }, { reading: 'オト' },
       { reading: 'ナド' }
-    ])
-    expect(tokens).to.deep.equal({ status: 'fail' })
+    ] as IpadicFeatures[])
+    expect(tokens).to.deep.equal({ status: 'fail', tokens: [] })
   })
 
   it('文字列から音として計上されない文字を除く', () => {
-    expect(hf.reading({ reading: 'アァ' })).to.equal('ア')
+    expect(hf.reading({ reading: 'アァ' } as IpadicFeatures)).to.equal('ア')
   })
 
   it('ッは音として計上する', () => {
-    expect(hf.reading({ reading: 'ッッァ' })).to.equal('ッッ')
+    expect(hf.reading({ reading: 'ッッァ' } as IpadicFeatures)).to.equal('ッッ')
   })
 })

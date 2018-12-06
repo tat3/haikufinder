@@ -1,12 +1,12 @@
-const fs = require('fs')
-const kuromoji = require('kuromoji')
-const Markov = require('./markov.js')
+import fs from 'fs'
+import kuromoji from 'kuromoji'
+const Markov = require('./markov')
 
 const builder = kuromoji.builder({
   dicPath: 'node_modules/kuromoji/dict'
 })
 
-const ashitaka = (nSentence) => {
+const ashitaka = (nSentence: number) => {
   const markov = new Markov()
 
   builder.build((err, tokenizer) => {
@@ -22,7 +22,7 @@ const ashitaka = (nSentence) => {
       const lines = data.split('\n')
       lines.forEach((line) => {
         const tokens = tokenizer.tokenize(line)
-        const words = tokens.map(token => token.surface_form)
+        const words = tokens.map((token) => token.surface_form)
         markov.add(words)
       })
 

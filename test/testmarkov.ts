@@ -2,7 +2,7 @@
 const chai = require('chai')
 const expect = chai.expect
 
-const Markov = require('../lib/markov.js')
+import Markov from '../lib/markov'
 
 describe('テストツールが動いているかテスト', () => {
   it('1 + 1 = 2', () => {
@@ -11,7 +11,7 @@ describe('テストツールが動いているかテスト', () => {
 })
 
 describe('Markovクラスのテスト', () => {
-  let words
+  let words: string[]
   before((done) => {
     words = ['a', 'b', 'c', 'c', 'd']
 
@@ -22,7 +22,7 @@ describe('Markovクラスのテスト', () => {
     const markov = new Markov()
     markov.add(words)
     expect(markov.data).to.deep.equal({
-      [null]: ['a'],
+      null: ['a'],
       a: ['b'],
       b: ['c'],
       c: ['c', 'd']
@@ -41,7 +41,7 @@ describe('Markovクラスのテスト', () => {
     markov.add(words)
     markov.add(words2)
     expect(markov.data).to.deep.equal({
-      [null]: ['a', 'A'],
+      null: ['a', 'A'],
       a: ['b'],
       b: ['c'],
       c: ['c', 'd'],
