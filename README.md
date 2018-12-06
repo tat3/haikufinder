@@ -4,11 +4,11 @@
 
 Herokuにて公開しています。https://haikufinder.herokuapp.com
 
-## Usage
+## Run application
 
 ```bash
-yarn --no-bin-links install
-node index.js
+yarn install
+yarn run start
 ```
 
 その後`http://localhost:3000`を開く
@@ -16,6 +16,6 @@ node index.js
 ## Run test
 
 ```
-yarn --no-bin-links install
+yarn install
 yarn test
 ```
