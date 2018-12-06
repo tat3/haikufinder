@@ -2,10 +2,11 @@
 const chai = require('chai')
 const expect = chai.expect
 
-const HaikuValidator = require('../lib/haikuvalidator').default
+import HaikuValidator from '../lib/haikuvalidator'
+import { IpadicFeatures } from 'kuromoji'
 
 describe('HaikuValidatorのテスト', () => {
-  let hv
+  let hv: HaikuValidator
 
   before(done => {
     hv = new HaikuValidator()
@@ -15,23 +16,23 @@ describe('HaikuValidatorのテスト', () => {
   it('俳句内にKNOWNでない文字列があればtrue、すべてKNOWNならfalseを返す', () => {
     expect(hv.hasUnknownWord([[
       { word_type: 'KNOWN' }
-    ]])).to.equal(false)
+    ]] as IpadicFeatures[][])).to.equal(false)
 
     expect(hv.hasUnknownWord([[
       { word_type: 'UNKNOWN' },
       { word_type: 'KNOWN' }
-    ]])).to.equal(true)
+    ]] as IpadicFeatures[][])).to.equal(true)
   })
 
   it('句は自立語から始まらなければならない', () => {
     expect(hv.startWithJiritsugo([[
       { pos: '名詞' }
-    ]])).to.equal(true)
+    ]] as IpadicFeatures[][])).to.equal(true)
 
     expect(hv.startWithJiritsugo([[
       { pos: '名詞' },
       { pos: '助詞' }
-    ]])).to.equal(true)
+    ]] as IpadicFeatures[][])).to.equal(true)
   })
 
   it('配列の次元を落とす汎用関数', () => {

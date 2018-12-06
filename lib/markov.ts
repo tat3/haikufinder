@@ -1,4 +1,4 @@
-module.exports = class Markov {
+class Markov {
   data: { [key: string]: string[]}
   constructor () {
     this.data = {}
@@ -33,3 +33,5 @@ module.exports = class Markov {
 }
 
 const addHash = <T>(hash1: T, hash2: T) => Object.assign(hash1, hash2)
+
+export default Markov

@@ -2,7 +2,7 @@ import HaikuValidator from './haikuvalidator'
 import { IpadicFeatures, Tokenizer, builder as Builder } from 'kuromoji'
 import { isPrimitive } from 'util'
 
-module.exports = class HaikuFinder {
+class HaikuFinder {
   haikuValidator: HaikuValidator
   promiseTokenizer: Promise<Tokenizer<IpadicFeatures>>
   constructor () {
@@ -144,3 +144,5 @@ module.exports = class HaikuFinder {
     return chars.reduce((str, char) => str.replace(char, ''), token.reading)
   }
 }
+
+export default HaikuFinder

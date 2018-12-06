@@ -1,6 +1,7 @@
 import { IpadicFeatures } from 'kuromoji'
 
-module.exports = class HaikuValidator {
+class HaikuValidator {
+  constructor () {}
   /**
    * 俳句内にKNOWNでない文字列がないかを探す
    * @param {string[][]} haiku
@@ -31,3 +32,5 @@ module.exports = class HaikuValidator {
     return itemss.reduce((acc, items) => acc.concat(items), [])
   }
 }
+
+export default HaikuValidator
