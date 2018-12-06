@@ -8,7 +8,9 @@
     "test": "node ./node_modules/mocha/bin/mocha build/test --timeout 10000 --watch",
     "lint": "tslint './lib/*.ts' --fix",
     "start": "node build/index.js",
-    "tsc": "tsc --watch"
+    "tsc": "tsc",
+    "tscw": "tsc --watch",
+    "postinstall": "yarn run tsc"
   },
   "dependencies": {
     "@types/express": "^4.16.0",
