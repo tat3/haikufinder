@@ -2,7 +2,7 @@ class Maybe<T> {
   private constructor (private value: T | null) {}
 
   static some<T> (value: T) {
-    if (!value) {
+    if (value === null) {
       throw Error('Provided value must not be empty')
     }
     return new Maybe(value)
@@ -42,6 +42,13 @@ class Maybe<T> {
 
   isSome () {
     return !this.isNone()
+  }
+
+  dropWhen (f: (wrapped: T) => boolean) {
+    if (this.value === null) {
+      return Maybe.none<T>()
+    }
+    return f(this.value) ? Maybe.none<T>() : Maybe.some(this.value)
   }
 }
 

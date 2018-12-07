@@ -86,23 +86,19 @@ class HaikuFinder {
    * 読点、コンマ、空白以外でreadingを持たない文字があればstatus: longerを返す
    */
   pickNLetterWords (tokens: Ku, n: number) {
-    const acc = tokens.reduce((acc, token) => {
-      if (acc.len >= n) { return acc }
-      if (token.reading === undefined) {
-        return { len: n + 1, tokens: acc.tokens }
-      }
-      // カタカナのみ以外が含まれていると失敗。三点リーダや括弧を排除
-      if (!token.reading.match(/^[ァ-ヶー]*$/)) {
-        return { len: n + 1, tokens: acc.tokens }
-      }
-      const str = this.reading(token)
-      return {
-        len: acc.len + str.length,
-        tokens: acc.tokens.concat([token])
-      }
-    }, { len: 0, tokens: [] as Ku })
-    if (acc.len !== n) { return Maybe.none<Ku>() }
-    return Maybe.fromValue(acc.tokens)
+    return tokens.reduce((acc, token) => {
+      if (acc.map(acc => acc.len === n).getOrElse(false)) { return acc }
+      return acc
+        .dropWhen(acc => acc.len > n)
+        // 読みのない語やカタカナ以外が含まれていると失敗。三点リーダや括弧を排除
+        .dropWhen(acc => (token.reading === undefined || !token.reading.match(/^[ァ-ヶー]*$/)))
+        .map(acc => ({
+          len: acc.len + this.reading(token).length,
+          tokens: acc.tokens.concat([token])
+        }))
+    }, Maybe.fromValue({ len: 0, tokens: [] as Ku }))
+      .dropWhen(acc => acc.len < n)
+      .map(acc => acc.tokens)
   }
 
   /**
