@@ -28,16 +28,15 @@ class HaikuFinder {
    */
   async interpret (sentence: string): Promise<Response> {
     const tokens = await this.parseSentence(sentence)
-    const res = this.searchFirstHaiku(tokens)
-    if (res.isNone()) { return { hasHaiku: false, tokens } }
-    const kus = res.getOrElse([] as Kus)
-    return {
-      hasHaiku: true,
-      haikuString: sentence,
-      haiku: kus.map(ku => ku.reduce((acc, token) => acc + token.surface_form, '')),
-      haikuTokens: kus,
-      tokens: tokens
-    }
+    return this.searchFirstHaiku(tokens)
+      .map(kus => ({
+        hasHaiku: true,
+        haikuString: sentence,
+        haiku: kus.map(ku => ku.reduce((acc, token) => acc + token.surface_form, '')),
+        haikuTokens: kus,
+        tokens: tokens
+      }))
+      .getOrElse({ hasHaiku: false, tokens })
   }
 
   /**
