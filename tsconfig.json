@@ -58,6 +58,7 @@
     // "emitDecoratorMetadata": true,         /* Enables experimental support for emitting type metadata for decorators. */
     "lib":["es2016"],
     "downlevelIteration": true,
-    "outDir": "build/"
+    "outDir": "build/",
+    "strictNullChecks": true
   }
 }
