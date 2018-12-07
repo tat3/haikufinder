@@ -105,23 +105,17 @@ class HaikuFinder {
    * tokensを先頭から調べて5, 7, 5となる部分を抜き出す
    */
   pickHaikuFromHead (tokens: Ku) {
-    const haiku = [5, 7, 5].reduce((acc, on) => {
-      if (acc.status !== 'match') { return acc }
-
-      const kuRes = this.pickNLetterWords(acc.tail, on)
-      if (kuRes.isNone()) { return { status: 'fail', tail: [], kus: [] } }
-      const ku = kuRes.getOrElse([] as Ku)
-      return {
-        status: 'match',
-        tail: acc.tail.slice(ku.length),
-        kus: acc.kus.concat([ku])
-      }
-    }, { status: 'match', tail: tokens, kus: [] as Kus })
-
-    if (haiku.status !== 'match') { return Maybe.none<Kus>() }
-    if (this.haikuValidator.hasUnknownWord(haiku.kus)) { return Maybe.none<Kus>() }
-    if (!this.haikuValidator.startWithJiritsugo(haiku.kus)) { return Maybe.none<Kus>() }
-    return Maybe.fromValue(haiku.kus)
+    return [5, 7, 5].reduce((acc, on) => {
+      return acc.flatMap(acc => this.pickNLetterWords(acc.tail, on))
+        .product(acc)
+        .map(item => ({
+          tail: item[1].tail.slice(item[0].length),
+          kus: item[1].kus.concat([item[0]])
+        }))
+    }, Maybe.fromValue({ tail: tokens, kus: [] as Kus }))
+      .map(acc => acc.kus)
+      .dropWhen(kus => this.haikuValidator.hasUnknownWord(kus))
+      .dropWhen(kus => !this.haikuValidator.startWithJiritsugo(kus))
   }
 
   /**

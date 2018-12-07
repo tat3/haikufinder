@@ -50,6 +50,14 @@ class Maybe<T> {
     }
     return f(this.value) ? Maybe.none<T>() : Maybe.some(this.value)
   }
+
+  product<U> (m: Maybe<U>): Maybe<[T, U]> {
+    const mvalue = m.getOrElse({} as U)
+    if (this.value === null || m.isNone()) {
+      return Maybe.none<[T, U]>()
+    }
+    return Maybe.some([this.value, mvalue] as [T, U])
+  }
 }
 
 export default Maybe
