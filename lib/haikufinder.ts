@@ -1,12 +1,23 @@
-import HaikuValidator from './haikuvalidator'
+import KusValidator from './haikuvalidator'
 import { IpadicFeatures, Tokenizer, builder as Builder } from 'kuromoji'
-import { isPrimitive } from 'util'
+import Maybe from './maybe'
+
+interface Response {
+  hasHaiku: boolean
+  tokens: Ku
+  haikuString?: string
+  haiku?: string[]
+  haikuTokens?: Kus
+}
+
+type Ku = IpadicFeatures[]
+type Kus = Ku[]
 
 class HaikuFinder {
-  haikuValidator: HaikuValidator
+  haikuValidator: KusValidator
   promiseTokenizer: Promise<Tokenizer<IpadicFeatures>>
   constructor () {
-    this.haikuValidator = new HaikuValidator()
+    this.haikuValidator = new KusValidator()
     this.promiseTokenizer = this.getPromiseTokenizer()
   }
 
@@ -15,35 +26,32 @@ class HaikuFinder {
    * @param {string} sentence
    * @return {object}
    */
-  async interpret (sentence: string) {
+  async interpret (sentence: string): Promise<Response> {
     const tokens = await this.parseSentence(sentence)
     const res = this.searchFirstHaiku(tokens)
-    if (res.status !== 'match') {
-      return { hasHaiku: false, tokens: tokens }
-    }
+    if (res.isNone()) { return { hasHaiku: false, tokens } }
+    const kus = res.getOrElse([] as Kus)
     return {
       hasHaiku: true,
       haikuString: sentence,
-      haiku: res.tokens
-        .map(ku => ku.reduce((acc, token) => acc + token.surface_form, '')),
-      haikuTokens: res.tokens,
+      haiku: kus.map(ku => ku.reduce((acc, token) => acc + token.surface_form, '')),
+      haikuTokens: kus,
       tokens: tokens
     }
   }
 
   /**
    * tokensを先頭から調べて最初に見つけた俳句を返す
-   * @param {object[]} tokensInput
    */
-  searchFirstHaiku (tokensInput: IpadicFeatures[]) {
+  searchFirstHaiku (tokensInput: Ku) {
     let tokens = tokensInput
       .filter(token => !['、', ',', ' ', '　'].includes(token.surface_form))
     while (tokens.length !== 0) {
       const res = this.pickHaikuFromHead(tokens)
-      if (res.status === 'match') { return res }
+      if (res.isSome()) { return res }
       tokens = tokens.slice(1)
     }
-    return { status: 'fail', tokens: [] }
+    return Maybe.none<Kus>()
   }
 
   /**
@@ -76,11 +84,8 @@ class HaikuFinder {
   /**
    * tokensの先頭からn文字目までを取り出す
    * 読点、コンマ、空白以外でreadingを持たない文字があればstatus: longerを返す
-   * @param {token[]} tokens
-   * @param {num} n
-   * @return {object}
    */
-  pickNLetterWords (tokens: IpadicFeatures[], n: number) {
+  pickNLetterWords (tokens: Ku, n: number) {
     const acc = tokens.reduce((acc, token) => {
       if (acc.len >= n) { return acc }
       if (token.reading === undefined) {
@@ -95,46 +100,36 @@ class HaikuFinder {
         len: acc.len + str.length,
         tokens: acc.tokens.concat([token])
       }
-    }, { len: 0, tokens: [] as IpadicFeatures[] })
-    if (acc.len > n) { return { status: 'longer', tokens: [] } }
-    if (acc.len < n) { return { status: 'shorter', tokens: [] } }
-    return {
-      status: 'match',
-      tokens: acc.tokens
-    }
+    }, { len: 0, tokens: [] as Ku })
+    if (acc.len !== n) { return Maybe.none<Ku>() }
+    return Maybe.fromValue(acc.tokens)
   }
 
   /**
    * tokensを先頭から調べて5, 7, 5となる部分を抜き出す
-   * @param {object[]} tokens
-   * @return {object}
    */
-  pickHaikuFromHead (tokens: IpadicFeatures[]) {
+  pickHaikuFromHead (tokens: Ku) {
     const haiku = [5, 7, 5].reduce((acc, on) => {
       if (acc.status !== 'match') { return acc }
 
       const kuRes = this.pickNLetterWords(acc.tail, on)
-      if (kuRes.status !== 'match') { return { status: 'fail', tail: [], kus: [] } }
-      const ku = kuRes.tokens
+      if (kuRes.isNone()) { return { status: 'fail', tail: [], kus: [] } }
+      const ku = kuRes.getOrElse([] as Ku)
       return {
         status: 'match',
         tail: acc.tail.slice(ku.length),
         kus: acc.kus.concat([ku])
       }
-    }, { status: 'match', tail: tokens, kus: [] as IpadicFeatures[][] })
+    }, { status: 'match', tail: tokens, kus: [] as Kus })
 
-    if (haiku.status !== 'match') { return { status: 'fail', tokens: [] } }
-    if (this.haikuValidator.hasUnknownWord(haiku.kus)) { return { status: 'fail', tokens: [] } }
-    if (!this.haikuValidator.startWithJiritsugo(haiku.kus)) { return { status: 'fail', tokens: [] } }
-    return {
-      status: 'match',
-      tokens: haiku.kus
-    }
+    if (haiku.status !== 'match') { return Maybe.none<Kus>() }
+    if (this.haikuValidator.hasUnknownWord(haiku.kus)) { return Maybe.none<Kus>() }
+    if (!this.haikuValidator.startWithJiritsugo(haiku.kus)) { return Maybe.none<Kus>() }
+    return Maybe.fromValue(haiku.kus)
   }
 
   /**
    * tokenに対して特別な読み方を設定する
-   * @param {object} token
    */
   reading (token: IpadicFeatures) {
     const chars = [/ァ/g, /ィ/g, /ゥ/g, /ェ/g, /ォ/g, /ャ/g, /ュ/g, /ョ/g]

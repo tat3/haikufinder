@@ -15,7 +15,7 @@ class Maybe<T> {
   }
 
   static fromValue<T> (value: T) {
-    return value ? this.some(value) : this.none()
+    return value ? Maybe.some(value) : Maybe.none<T>()
   }
 
   getOrElse<T> (defaultValue: T) {
@@ -34,6 +34,14 @@ class Maybe<T> {
       return Maybe.none<R>()
     }
     return f(this.value)
+  }
+
+  isNone () {
+    return this.value === null
+  }
+
+  isSome () {
+    return !this.isNone()
   }
 }
 

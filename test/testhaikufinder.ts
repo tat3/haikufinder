@@ -1,6 +1,7 @@
 /* eslint-env mocha */
-const chai = require('chai')
+import chai from 'chai'
 const expect = chai.expect
+const assert = chai.assert
 
 // const HaikuFinder = require('../lib/haikufinder')
 import HaikuFinder from '../lib/haikufinder'
@@ -46,28 +47,25 @@ describe('分解された文字列が575の形式になっているかどうか�
       { reading: 'ヤ' },
       { reading: 'カワズ' }
     ] as IpadicFeatures[], 5)
-    expect(tokens).to.deep.equal({
-      status: 'match',
-      tokens: [
-        { reading: 'フルイケ' },
-        { reading: 'ヤ' }
-      ]
-    })
+    expect(tokens.getOrElse([])).to.deep.equal([
+      { reading: 'フルイケ' },
+      { reading: 'ヤ' }
+    ])
   })
 
-  it('tokensがn文字に満たなかった場合、statusにshorterを入れる', () => {
+  it('tokensがn文字に満たなかった場合、失敗', () => {
     const tokens = hf.pickNLetterWords([
       { reading: 'フルイケ' }
     ] as IpadicFeatures[], 5)
-    expect(tokens).to.deep.equal({ status: 'shorter', tokens: [] })
+    assert(tokens)
   })
 
-  it('tokensからn文字を取り出せなかった場合、statusにlongerを入れる', () => {
+  it('tokensからn文字を取り出せなかった場合、失敗', () => {
     const tokens = hf.pickNLetterWords([
       { reading: 'フルイケ' },
       { reading: 'ヤカワズ' }
     ] as IpadicFeatures[], 5)
-    expect(tokens).to.deep.equal({ status: 'longer', tokens: [] })
+    assert(tokens.isNone)
   })
 
   it('tokenにreadingのない単語が入っていたら失敗', () => {
@@ -75,7 +73,7 @@ describe('分解された文字列が575の形式になっているかどうか�
       { reading: 'フルイケヤ' }, { surface_form: 'エクセル' },
       { reading: 'カワズトビコム' }, { reading: 'ミズノオト' }
     ] as IpadicFeatures[])
-    expect(res.status).to.deep.equal('fail')
+    assert(res.isNone)
   })
 
   it('tokensの先頭から文字数が5, 7, 5となるように部分列を取り出す', () => {
@@ -90,33 +88,30 @@ describe('分解された文字列が575の形式になっているかどうか�
       { word_type: 'KNOWN', pos: '名詞', reading: 'ナド' }
     ] as IpadicFeatures[]
     const tokens = hf.pickHaikuFromHead(haikuTokens)
-    expect(tokens).to.deep.equal({
-      status: 'match',
-      tokens: [
-        [
-          { word_type: 'KNOWN', pos: '名詞', reading: 'フルイケ' },
-          { word_type: 'KNOWN', pos: '名詞', reading: 'ヤ' }
-        ],
-        [
-          { word_type: 'KNOWN', pos: '名詞', reading: 'カワズ' },
-          { word_type: 'KNOWN', pos: '名詞', reading: 'トビコム' }
-        ],
-        [
-          { word_type: 'KNOWN', pos: '名詞', reading: 'ミズ' },
-          { word_type: 'KNOWN', pos: '名詞', reading: 'ノ' },
-          { word_type: 'KNOWN', pos: '名詞', reading: 'オト' }
-        ]
+    expect(tokens.getOrElse([])).to.deep.equal([
+      [
+        { word_type: 'KNOWN', pos: '名詞', reading: 'フルイケ' },
+        { word_type: 'KNOWN', pos: '名詞', reading: 'ヤ' }
+      ],
+      [
+        { word_type: 'KNOWN', pos: '名詞', reading: 'カワズ' },
+        { word_type: 'KNOWN', pos: '名詞', reading: 'トビコム' }
+      ],
+      [
+        { word_type: 'KNOWN', pos: '名詞', reading: 'ミズ' },
+        { word_type: 'KNOWN', pos: '名詞', reading: 'ノ' },
+        { word_type: 'KNOWN', pos: '名詞', reading: 'オト' }
       ]
-    })
+    ])
   })
 
-  it('tokensの先頭から5, 7, 5を取り出せなかった場合failを返す', () => {
+  it('tokensの先頭から5, 7, 5を取り出せなかった場合失敗', () => {
     const tokens = hf.pickHaikuFromHead([
       { reading: 'フルイケ' }, { reading: 'ヤ' },
       { reading: 'ミズ' }, { reading: 'ノ' }, { reading: 'オト' },
       { reading: 'ナド' }
     ] as IpadicFeatures[])
-    expect(tokens).to.deep.equal({ status: 'fail', tokens: [] })
+    assert(tokens.isNone())
   })
 
   it('文字列から音として計上されない文字を除く', () => {
