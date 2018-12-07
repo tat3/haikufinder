@@ -1,7 +1,6 @@
 import { IpadicFeatures } from 'kuromoji'
 
 class HaikuValidator {
-  constructor () {}
   /**
    * 俳句内にKNOWNでない文字列がないかを探す
    * @param {string[][]} haiku
